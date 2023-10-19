@@ -99,14 +99,14 @@ export class PostService {
     return this.http.post<PostComment>(this.baseUrl + "/posts/" + postId + "/comment", "\"" + comment + "\"", this.options);
   }
 
-  deleteComment(id: number) {
-    return this.http.delete(this.baseUrl + "/posts/" + id + "/Comment", this.options);
+  deleteComment(postId: number, commentId: number) {
+    return this.http.delete(this.baseUrl + "/posts/" + postId + "/Comment?id=" + commentId, this.options);
   }
 
-  updateComment(id: number, comment: string) {
+  updateComment(postId: number, commentId: number, comment: string) {
     const body = "\"" + comment + "\"";
     console.log(body)
-    return this.http.put(this.baseUrl + "/posts/" + id + "/Comment", body, this.options);
+    return this.http.put(this.baseUrl + "/posts/" + postId + "/Comment?id=" + commentId, body, this.options);
   }
 
   getLocalDateTime(dateTime: string) {

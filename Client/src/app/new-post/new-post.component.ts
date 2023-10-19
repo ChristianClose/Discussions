@@ -23,7 +23,7 @@ export class NewPostComponent implements OnDestroy {
     });
   }
   ngOnDestroy(): void {
-    this.postSub.unsubscribe();
+    if(this.postSub) this.postSub.unsubscribe();
   }
 
   onSubmit() {

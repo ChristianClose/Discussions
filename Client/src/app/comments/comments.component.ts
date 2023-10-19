@@ -46,12 +46,12 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
   }
 
-  deleteComment(id: number): void {
-    this.subs.push(this.postService.deleteComment(id).subscribe(() => this.reloadPostComponent()));
+  deleteComment(postId: number, commentId: number): void {
+    this.subs.push(this.postService.deleteComment(postId, commentId).subscribe(() => this.reloadPostComponent()));
   }
 
-  updateComment(id: number, comment: string): void {
-    this.subs.push(this.postService.updateComment(id, comment).subscribe(() => this.reloadPostComponent()));
+  updateComment(postId: number, commentId: number, comment: string): void {
+    this.subs.push(this.postService.updateComment(postId, commentId, comment).subscribe(() => this.reloadPostComponent()));
   }
 
   reloadPostComponent() {

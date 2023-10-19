@@ -165,8 +165,8 @@ public class PostsController : BaseController
         return Ok("Comment Successfully Added To Post");
     }
 
-    [HttpDelete("{id}/Comment")]
-    public async Task<ActionResult> DeleteComment(int id)
+    [HttpDelete("{postId}/Comment")]
+    public async Task<ActionResult> DeleteComment(int postId, int id)
     {
         int userId = parseUserNameIdentifier(ClaimTypes.NameIdentifier);
         if (userId == -1) return Unauthorized("You are not authorized to delete this comment");
@@ -180,8 +180,8 @@ public class PostsController : BaseController
         return Ok("Comment successfully deleted");
     }
 
-    [HttpPut("{id}/Comment")]
-    public async Task<ActionResult> UpdateComment(int id, [FromBody] string comment)
+    [HttpPut("{postId}/Comment")]
+    public async Task<ActionResult> UpdateComment(int postId, int id, [FromBody] string comment)
     {
         int userId = parseUserNameIdentifier(ClaimTypes.NameIdentifier);
         if (userId == -1) return Unauthorized("You are not authorized to update this comment");
