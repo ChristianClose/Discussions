@@ -1,0 +1,25 @@
+<div class="main-container  container p-0">
+    <!-- Your main content goes here -->
+    <div class="text-decoration-none text-light row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative"
+        *ngIf="post$ | async as post">
+        <div class="col-auto d-none d-lg-block">
+            <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" role="img"
+                aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                <title>Placeholder</title>
+                <rect width="100%" height="100%" fill="#55595c"></rect><text x="30%" y="50%" fill="#eceeef"
+                    dy=".3em">Thumbnail</text>
+            </svg>
+        </div>
+        <div class="col p-4 d-flex flex-column position-static">
+            <div class="d-flex justify-content-between">
+                <h3 class="mb-0">{{post.title}}</h3>
+                <p class="text-end text-secondary p-0">Posted by: {{post.userName}}</p>
+            </div>
+            <div class="mb-1 text-secondary">{{post.date}}</div>
+            <textarea value="{{post.message}}">{{post.message}}</textarea>
+            <button *ngIf="(this.accountService.user | async) && 
+                this.accountService.userValue?.username == post.userName" class="btn btn-danger ms-auto"
+               >Update Post</button>
+        </div>
+    </div>
+</div>

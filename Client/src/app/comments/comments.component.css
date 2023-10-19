@@ -1,0 +1,39 @@
+.comment {
+    border-left: 0.1rem solid white;
+    border-bottom: 0.08rem solid rgba(128, 128, 128, 0.116);
+}
+
+.comment-container {
+    background-color: #181717;
+}
+
+.deleteConfirm > button:first-of-type {
+    position: relative;
+    width: 4rem;
+    margin: 0.5rem;
+    left: 7rem !important;
+    bottom: 1rem;
+}
+
+.deleteConfirm > button:nth-of-type(2) {
+    position: relative;
+    width: 4rem;
+    margin: 0.5rem;
+    left: 7rem !important;
+    bottom: 1rem
+}
+
+.deleteConfirm {
+    width: 25rem;
+    height: 30rem;
+    left: 53rem;
+    top: 2rem;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.dropdown-menu{
+    transform: translate(-1rem, -2rem) !important;
+}

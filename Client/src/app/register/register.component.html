@@ -1,0 +1,7 @@
+<form [formGroup]="form" class="" role="login" (ngSubmit)="Register()">
+    <input formControlName="username" class="form-control m-2" type="text" placeholder="Username" aria-label="Username" [ngClass]="{'is-invalid': submitted && controls['username'].errors}" >
+    <input formControlName="password" class="form-control m-2" type="password" placeholder="Password" aria-label="Password" [ngClass]="{'is-invalid': submitted && controls['password'].errors}">
+    <input formControlName="confirmPassword" class="form-control m-2" type="password" placeholder="Confirm Password" aria-label="ConfirmPassword" [ngClass]="{'is-invalid': submitted && controls['confirmPassword'].errors}">
+    <button class="btn btn-success" type="submit">Register</button>
+    <p *ngIf="form.errors?.['PasswordsDontMatch']" class="text-danger">Passwords Do Not Match</p>
+  </form>

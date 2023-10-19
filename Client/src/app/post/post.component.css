@@ -1,0 +1,30 @@
+.main-container {
+    background-color: rgb(24, 23, 23);
+    padding-top: 1rem;
+    padding-bottom: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+
+#deleteConfirm > button:first-of-type {
+    position: relative;
+    width: 8rem;
+    margin: 0%;
+    left: 1rem !important;
+}
+
+#deleteConfirm > button:nth-of-type(2) {
+    position: relative;
+    width: 8rem;
+    margin: 0%;
+    left: 2rem !important;
+}
+
+.comment {
+    border-left: 0.1rem solid white;
+    border-bottom: 0.08rem solid rgba(128, 128, 128, 0.116);
+}

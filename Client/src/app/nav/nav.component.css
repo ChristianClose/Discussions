@@ -1,0 +1,23 @@
+.navbar {
+    background-color: rgb(24, 23, 23);
+}
+
+/* .error {
+    padding-bottom: 0;
+    margin-bottom: 0;
+} */
+
+#login {
+    margin-left: 1rem;
+}
+
+#searchResults > div {
+    width: 13rem;
+    margin-top: 4.5rem;
+    padding-top: 0;
+    text-align: left;
+}
+
+#searchResults {
+    top: -1rem;
+}

@@ -1,0 +1,61 @@
+<nav>
+  <div class="navbar navbar-expand-md navbar-dark fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" routerLink="">{{title}}</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+        aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" routerLink="" routerLinkActive="active">Home</a>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" routerLink="">Link</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+          </li> -->
+        </ul>
+        <div class="ms-auto">
+          <form class="d-flex" role="search">
+            <input name="search" class="form-control me-2" type="search" placeholder="Search" aria-label="Search"
+              (input)="Search($event)">
+            <div id="searchResults" class="position-absolute" *ngIf="search$">
+              <div class="position-fixed border rounded" >
+                <div class="d-flex bg-secondary" *ngFor="let item of search$ | async">
+                  <a routerLink="/posts/{{item.id}}" class="text-decoration-none text-white p-1">
+                    <p>{{item.title}}</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div id="login" *ngIf="!(this.accountService.user | async)">
+          <form [formGroup]="form"#formDirective="ngForm" class="d-flex" role="login" (ngSubmit)="Login()">
+            <input formControlName="username" class="form-control me-2" type="text" placeholder="Username"
+              aria-label="Username" [ngClass]="{'is-invalid': (submitted && controls['username'].invalid)}">
+            <input formControlName="password" class="form-control me-2" type="password" placeholder="Password"
+              aria-label="Password" [ngClass]="{'is-invalid': (submitted && controls['password'].invalid)}">
+            <button class="btn btn-success" type="submit">Login</button>
+          </form>
+          <p *ngIf="submitted && loginError" class="text-danger p-0 m-0">Error: {{loginError}}</p>
+        </div>
+        <button dropdown *ngIf="(this.accountService.user | async)" class=" dropdown btn btn-secondary ms-2 ">
+          <a href="#" dropdownToggle (click)="false" class="text-decoration-none text-light text-center ms-2 pe-1"
+            *ngIf="this.accountService.userValue">Welcome, {{this.accountService.userValue.username | titlecase}}</a>
+          <ul *dropdownMenu class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" routerLink="/posts/new">Create Post</a>
+            </li>
+            <li>
+              <a class="dropdown-item" (click)="Logout()">Logout</a>
+            </li>
+          </ul>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

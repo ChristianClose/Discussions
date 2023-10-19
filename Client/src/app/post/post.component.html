@@ -1,0 +1,55 @@
+<div *ngIf="this.postService.Post$ | async as post">
+    <div class="main-container  container p-0">
+        <div
+            class="text-decoration-none text-light row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+            <div class="col-auto d-none d-lg-block">
+                <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" role="img"
+                    aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                    <title>Placeholder</title>
+                    <rect width="100%" height="100%" fill="#55595c"></rect><text x="30%" y="50%" fill="#eceeef"
+                        dy=".3em">Thumbnail</text>
+                </svg>
+            </div>
+            <div class="col p-4 d-flex flex-column position-static">
+                <div class="d-flex justify-content-between">
+                    <h3 class="mb-0">{{post.title}}</h3>
+                    <div class="d-flex">
+                        <p class="text-secondary p-0 me-3">Posted by: {{post.userName | titlecase}}</p>
+                        <span dropdown class="dropdown">
+                            <a id="options-link" dropdownToggle type="button" class="dropdown-toggle"
+                                aria-controls="basic-link-dropdown"
+                                *ngIf="this.accountService.userValue && this.accountService.userValue.username == post.userName">
+                                <svg width="22px" height="22px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
+                                    fill="rgba(var(--bs-secondary-rgb),var(--bs-text-opacity))" class="">
+                                    <path
+                                        d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                                </svg>
+                            </a>
+                            <ul id="options-link-dropdown" *dropdownMenu class="dropdown-menu dropdown-menu-right"
+                                role="menu" aria-labelledby="options-link">
+                                <li role="menuitem">
+                                    <a class="dropdown-item" (click)="shouldUpdate = true">Update</a>
+                                </li>
+                                <li role="menuitem">
+                                    <a class="dropdown-item" (click)="shouldDelete = true">Delete</a>
+                                </li>
+                            </ul>
+                            <div id="deleteConfirm" class="p-5 bg-secondary rounded position-absolute end-100"
+                                style="width: 25rem;" *ngIf="shouldDelete">
+                                <p class="text-center">Are you sure you want to delete this post?</p>
+                                <button class="btn btn-success p-3" (click)="deletePost(post.id)">Yes</button>
+                                <button class="btn btn-danger p-3 end-50" (click)="shouldDelete = false">No</button>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+                <div class="mb-1 text-secondary">{{post.date}}</div>
+                <p *ngIf="!shouldUpdate">{{post.message}}</p>
+                <textarea *ngIf="shouldUpdate" [(ngModel)]="post.message">{{post.message}}</textarea>
+                <button *ngIf="shouldUpdate" class="btn btn-primary ms-auto mt-1"
+                    (click)="updatePost(post.id, post.message)">Update Post</button>
+            </div>
+        </div>
+    </div>
+    <app-comments></app-comments>
+</div>

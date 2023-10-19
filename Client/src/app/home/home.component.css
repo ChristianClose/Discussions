@@ -1,0 +1,15 @@
+.main-container {
+    background-color: rgb(24, 23, 23);
+}
+
+.side-container {
+    background-color: rgb(24, 23, 23);
+}
+
+.btn {
+    width: 15rem;
+}
+
+main {
+    margin-top: 5rem;
+}

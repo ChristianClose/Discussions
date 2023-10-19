@@ -1,0 +1,64 @@
+<main class="container overflow-hidden">
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <!-- Main Container -->
+            <a class="text-decoration-none" *ngFor="let post of this.postService.Posts$ | async" 
+                routerLink="/posts/{{post.id}}">
+                <!-- Your main content goes here -->
+                <div
+                    class=" main-container text-light row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col-auto d-none d-lg-block">
+                        <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
+                            role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice"
+                            focusable="false">
+                            <title>Placeholder</title>
+                            <rect width="100%" height="100%" fill="#55595c"></rect><text x="30%" y="50%" fill="#eceeef"
+                                dy=".3em">Thumbnail</text>
+                        </svg>
+                    </div>
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <div class="d-flex justify-content-between">
+                            <h3 class="mb-0">{{post.title}}</h3>
+                            <p class="text-end text-secondary p-0">Posted by: {{post.userName | titlecase}}</p>
+                        </div>
+                        <div class="mb-1 text-secondary">{{post.date}}</div>
+                        <p class="mb-auto">{{post.message}}</p>
+                        <p class="icon-link gap-1 icon-link-hover stretched-link">
+                            Continue Reading
+                            <svg class="bi">
+                                <use xlink:href="#chevron-right"></use>
+                            </svg>
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <!-- Side Container -->
+            <div class="side-container p-4 border rounded text-center">
+                <!-- Your side content goes here -->
+                <h2 *ngIf="this.accountService.userValue" class="text-white mb-3"> Welcome,
+                    {{this.accountService.userValue.username | titlecase}}</h2>
+                <ul *ngIf="this.accountService.userValue" class="text-white text-decoration-none list-unstyled">
+                    <li>
+                        <button class="text-decoration-none text-white btn btn-lg btn-primary"
+                            routerLink="/posts/new">Create Post</button>
+                    </li>
+                </ul>
+                <ul *ngIf="!(this.accountService.userValue)" class="text-white text-decoration-none list-unstyled">
+                    <li *ngIf="!registerClicked">
+                        <h4>Welcome to Discussions!</h4>
+                        <p>To get started, please register an account.</p>
+                        <button class="text-decoration-none text-white btn btn-lg btn-primary"
+                            (click)="this.registerClicked = true">Register</button>
+                    </li>
+                    <li *ngIf="registerClicked">
+                        <h4>Register</h4>
+                        <app-register></app-register>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</main>
