@@ -62,7 +62,7 @@ Posts
 POST
 url:5001/api/Posts/Create
 ```
-#####Request Body
+Request Body
 ```javascript
 {
   "title": string,
@@ -88,6 +88,58 @@ url:5001/api/Posts/{post_id}
 PUT
 url:5001/api/Posts/Update
 ```
+Request Body
+```javascript
+{
+  "id": number,
+  "title", string,
+  "message", string
+}
+```
+
+#### Delete Post
+```
+DELETE
+url:5001/api/Posts/Delete?id={post_id}
+```
+
+#### Search Posts
+```
+GET
+url:5001/api/Posts/Search?title={title_search_term}
+```
+
+---
+
+### Comments
+
+#### Create Comment
+```
+POST
+url:5001/api/Posts/{post_id}/Comment
+```
+Request Body
+```javascript
+  "Comment string"
+```
+
+#### Delete Comment
+```
+DELETE
+url:5001/api/Posts/{post_id}/Comment?id={comment_id}
+```
+
+#### Update Comment
+```
+PUT
+url:5001/api/Posts/{post_id}/Comment?id={comment_id}
+```
+
+Request Body
+```javascript
+  "Updated comment string
+```
+---
 
 ## :handshake: Contact
 
