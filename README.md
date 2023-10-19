@@ -38,6 +38,56 @@
 ### :dart: Features
 - Fulling Fuctional CRUD API
 
+### API Documentation
+
+Account
+---
+#### Register Account
+```
+POST
+url:5001/api/Account/Register
+```
+
+#### Login Account
+```
+POST
+url:5001/api/Account/Login
+```
+---
+
+Posts
+---
+#### Create Post
+```
+POST
+url:5001/api/Posts/Create
+```
+#####Request Body
+```javascript
+{
+  "title": string,
+  "message": string
+}
+```
+
+#### Get Posts
+```
+GET
+url:5001/api/Posts/
+```
+
+
+#### Get Single Post
+```
+GET
+url:5001/api/Posts/{post_id}
+```
+
+#### Update Post
+```
+PUT
+url:5001/api/Posts/Update
+```
 
 ## :handshake: Contact
 
