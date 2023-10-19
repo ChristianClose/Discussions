@@ -48,6 +48,7 @@ POST
 url:5001/api/Account/Register
 ```
 
+
 #### Login Account
 ```
 POST
@@ -68,20 +69,21 @@ Request Body
   "title": string,
   "message": string
 }
-```
+```  
+<br/>
+
 
 #### Get Posts
 ```
 GET
 url:5001/api/Posts/
-```
-
+```  
 
 #### Get Single Post
 ```
 GET
 url:5001/api/Posts/{post_id}
-```
+```  
 
 #### Update Post
 ```
@@ -95,13 +97,14 @@ Request Body
   "title", string,
   "message", string
 }
-```
+```  
+<br/>
 
 #### Delete Post
 ```
 DELETE
 url:5001/api/Posts/Delete?id={post_id}
-```
+```  
 
 #### Search Posts
 ```
@@ -121,19 +124,20 @@ url:5001/api/Posts/{post_id}/Comment
 Request Body
 ```javascript
   "Comment string"
-```
+```  
+<br/>
 
 #### Delete Comment
 ```
 DELETE
 url:5001/api/Posts/{post_id}/Comment?id={comment_id}
-```
+```  
 
 #### Update Comment
 ```
 PUT
 url:5001/api/Posts/{post_id}/Comment?id={comment_id}
-```
+```  
 
 Request Body
 ```javascript
