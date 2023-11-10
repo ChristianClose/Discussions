@@ -13,4 +13,6 @@ public class CommentEntity
     public int PostEntityId { get; set; }
     public PostEntity PostEntity { get; set; }
 
+    public int ParentCommentId { get; set; }
+
 }

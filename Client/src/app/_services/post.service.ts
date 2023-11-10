@@ -95,8 +95,12 @@ export class PostService {
     }))
   }
 
-  addComment(postId: number, comment: string) {
-    return this.http.post<PostComment>(this.baseUrl + "/posts/" + postId + "/comment", "\"" + comment + "\"", this.options);
+  addComment(postId: number, comment: string, parentCommentId: number) {
+    const body = {
+      comment: comment,
+      parentCommentId: parentCommentId
+    }
+    return this.http.post<PostComment>(this.baseUrl + "/posts/" + postId + "/comment", body, this.options);
   }
 
   deleteComment(postId: number, commentId: number) {

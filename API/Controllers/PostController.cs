@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.ObjectPool;
 
 namespace API;
 
@@ -53,11 +54,31 @@ public class PostsController : BaseController
                                  .FirstOrDefaultAsync(p => p.Id == id);
 
         if (post == null) return BadRequest("Post does not Exist!");
-        var comments = await _context.Comments
+        var commentEntities = await _context.Comments
                                         .Include(c => c.UserEntity)
                                         .Where(c => c.PostEntityId == post.Id)
-                                        .Select(c => new { c.Id, c.Comment, c.UserEntity.UserName, c.Date })
+                                        .Select(c => new { c.Id, c.Comment, c.UserEntity.UserName, c.Date, c.ParentCommentId })
                                         .ToListAsync();
+
+
+
+        var comments = new List<object>();
+        for (int i = 0; i < commentEntities.Count(); i++)
+        {
+            var childComments = commentEntities.FindAll(c => c.ParentCommentId == commentEntities[i].Id);
+
+            comments.Add(
+                new
+                {
+                    id = commentEntities[i].Id,
+                    comment = commentEntities[i].Comment,
+                    userName = commentEntities[i].UserName,
+                    date = commentEntities[i].Date,
+                    parentCommentId = commentEntities[i].ParentCommentId,
+                    children = childComments
+                }
+            );
+        }
 
         var postWithComments = new
         {
@@ -66,7 +87,7 @@ public class PostsController : BaseController
             post.Message,
             post.Date,
             post.UserName,
-            comments
+            comments,
         };
 
         return Ok(postWithComments);
@@ -129,15 +150,15 @@ public class PostsController : BaseController
         var posts = await Task.Run(() => _context.Posts
         .Select(post => new { post.Id, post.Message, post.Title, post.UserEntity.UserName })
         .Where(post => post.Title.ToLower().Contains(title.ToLower()))
-        .ToList())
-;
+        .ToList());
 
-        Console.WriteLine();
+
         return Ok(posts);
     }
 
-    [HttpPost("{id}/Comment")]
-    public async Task<ActionResult> AddComment(int id, [FromBody] string comment)
+    [Authorize]
+    [HttpPost("{postId}/Comment")]
+    public async Task<ActionResult> AddComment(int postId, CommentDto comment)
     {
 
         int userId = parseUserNameIdentifier(ClaimTypes.NameIdentifier);
@@ -145,7 +166,7 @@ public class PostsController : BaseController
 
         DateTime dateTime = DateTime.UtcNow;
         UserEntity user = await _context.Users.FirstOrDefaultAsync(user => user.Id == userId);
-        PostEntity post = await _context.Posts.FirstOrDefaultAsync(post => post.Id == id);
+        PostEntity post = await _context.Posts.FirstOrDefaultAsync(post => post.Id == postId);
 
         if (user == null || post == null) return BadRequest("Invalid User or Post");
 
@@ -153,9 +174,10 @@ public class PostsController : BaseController
         {
             UserEntityId = userId,
             UserEntity = user,
-            PostEntityId = id,
+            PostEntityId = postId,
             PostEntity = post,
-            Comment = comment,
+            Comment = comment.Comment,
+            ParentCommentId = comment.ParentCommentId,
             Date = dateTime
         };
 
@@ -165,6 +187,7 @@ public class PostsController : BaseController
         return Ok("Comment Successfully Added To Post");
     }
 
+    [Authorize]
     [HttpDelete("{postId}/Comment")]
     public async Task<ActionResult> DeleteComment(int postId, int id)
     {
@@ -180,6 +203,7 @@ public class PostsController : BaseController
         return Ok("Comment successfully deleted");
     }
 
+    [Authorize]
     [HttpPut("{postId}/Comment")]
     public async Task<ActionResult> UpdateComment(int postId, int id, [FromBody] string comment)
     {
@@ -204,5 +228,10 @@ public class PostsController : BaseController
     private async Task<UserEntity> FindUser(int id)
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+    }
+
+    private List<CommentEntity> GetCommentChildren()
+    {
+        return _context.Comments.Select(c => c.Id == c.ParentCommentId ? c : null).ToList();
     }
 }

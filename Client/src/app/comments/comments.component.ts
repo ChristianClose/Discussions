@@ -15,10 +15,12 @@ import { BsDropdownDirective } from 'ngx-bootstrap/dropdown';
 export class CommentsComponent implements OnInit, OnDestroy {
   subs = new Array<Subscription>;
   newComment = "";
+  newReply = "";
   post$!: Observable<Post | undefined>;
   postId!: number;
   shouldDelete = false;
   shouldUpdate = false;
+  showReplyTextArea: Array<boolean> = new Array<boolean>();
   deleteConfirmations: Array<boolean> = new Array<boolean>();
   updateConfirmations: Array<boolean> = new Array<boolean>();
 
@@ -37,8 +39,8 @@ export class CommentsComponent implements OnInit, OnDestroy {
     }));
   }
 
-  addComment(id: number, comment: string): void {
-    this.subs.push(this.postService.addComment(this.postId, comment).subscribe(() => {
+  addComment(id: number, comment: string, parentCommentId: number): void {
+    this.subs.push(this.postService.addComment(this.postId, comment, parentCommentId).subscribe(() => {
       this.postService.getPost(this.postId);
       this.reloadPostComponent();
     }));

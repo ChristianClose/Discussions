@@ -11,4 +11,11 @@ public class PostDTO
     [Required]
     public string Message { get; set; }
 
+    public string Date { get; set; }
+
+    public string Username { get; set; }
+
+    public CommentEntity[] Comments { get; set; }
+
+
 }
