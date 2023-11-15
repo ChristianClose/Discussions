@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Drawing;
+using System.Security.Claims;
 using System.Text.Json;
 using API.Context;
 using API.Controllers;
@@ -57,27 +58,36 @@ public class PostsController : BaseController
         var commentEntities = await _context.Comments
                                         .Include(c => c.UserEntity)
                                         .Where(c => c.PostEntityId == post.Id)
-                                        .Select(c => new { c.Id, c.Comment, c.UserEntity.UserName, c.Date, c.ParentCommentId })
+                                        .Select(c => new CommentDto
+                                        {
+                                            Id = c.Id,
+                                            Comment = c.Comment,
+                                            UserName = c.UserEntity.UserName,
+                                            Date = c.Date,
+                                            ParentCommentId = c.ParentCommentId,
+                                        })
                                         .ToListAsync();
 
 
 
-        var comments = new List<object>();
+        var comments = new List<CommentDto>();
         for (int i = 0; i < commentEntities.Count(); i++)
         {
+            if (commentEntities[i].ParentCommentId > 0) continue;
             var childComments = commentEntities.FindAll(c => c.ParentCommentId == commentEntities[i].Id);
 
             comments.Add(
-                new
+                new CommentDto
                 {
-                    id = commentEntities[i].Id,
-                    comment = commentEntities[i].Comment,
-                    userName = commentEntities[i].UserName,
-                    date = commentEntities[i].Date,
-                    parentCommentId = commentEntities[i].ParentCommentId,
-                    children = childComments
+                    Id = commentEntities[i].Id,
+                    Comment = commentEntities[i].Comment,
+                    UserName = commentEntities[i].UserName,
+                    Date = commentEntities[i].Date,
+                    ParentCommentId = commentEntities[i].ParentCommentId,
+                    Children = await GetCommentChildren(childComments)
                 }
             );
+
         }
 
         var postWithComments = new
@@ -230,8 +240,53 @@ public class PostsController : BaseController
         return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
     }
 
-    private List<CommentEntity> GetCommentChildren()
+    private async Task<List<CommentDto>> GetCommentChildren(List<CommentDto> comments)
     {
-        return _context.Comments.Select(c => c.Id == c.ParentCommentId ? c : null).ToList();
+        var completeComment = new List<CommentDto>();
+        foreach (var comment in comments)
+        {
+            var childComments = await _context.Comments.Where(c => comment.Id == c.ParentCommentId).Select(c => new CommentDto
+            {
+                Id = c.Id,
+                Comment = c.Comment,
+                UserName = c.UserEntity.UserName,
+                Date = c.Date,
+                ParentCommentId = c.ParentCommentId,
+                Children = new List<CommentDto>()
+            }).ToListAsync();
+
+            childComments.ForEach(async childComment =>
+            {
+            {
+                var grandChildComments = await _context.Comments.Where(c => childComment.Id == c.ParentCommentId).Select(c => new CommentDto
+                {
+                    Id = c.Id,
+                    Comment = c.Comment,
+                    UserName = c.UserEntity.UserName,
+                    Date = c.Date,
+                    ParentCommentId = c.ParentCommentId,
+                    Children = new List<CommentDto>()
+                }).ToListAsync();
+
+                childComment.Children = await GetCommentChildren(grandChildComments);
+            }
+            });
+
+            var fullComment = new CommentDto
+            {
+                Id = comment.Id,
+                Comment = comment.Comment,
+                UserName = comment.UserName,
+                Date = comment.Date,
+                ParentCommentId = comment.ParentCommentId,
+                Children = childComments
+            };
+
+            completeComment.Add(fullComment);
+
+        }
+
+        return completeComment;
     }
+    
 }

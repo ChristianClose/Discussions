@@ -13,8 +13,84 @@
         </form>
         <hr class="mt-2" />
     </div>
-    <div *ngFor="let comment of post.comments"
-        class="text-decoration-none text-light row g-0 overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative ">
+
+    <ng-container *ngFor="let comment of post.comments" [ngTemplateOutlet]="recursiveComments"
+        [ngTemplateOutletContext]="{$implicit: comment}">
+    </ng-container>
+
+    <ng-template #recursiveComments let-comment>
+        <div
+            class="text-decoration-none text-light row g-0 overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+            <div class="col p-4 d-flex flex-column position-relative comment pt-1">
+                <div class="d-flex justify-content-between pb-0">
+                    <div class="mt-0 pt-0 pb-0">
+                        <p class="ms-2 mb-0 fw-bold">{{comment.userName | titlecase}}</p>
+                        <p class="ms-2">{{comment.date}}</p>
+                    </div>
+
+                    <span dropdown class="dropdown mb-0 pb-0" *ngIf="this.accountService.userValue">
+                        <a id="options-link-{{comment.id}}" dropdownToggle type="button" class="dropdown-toggle"
+                            aria-controls="basic-link-dropdown"
+                            *ngIf="this.accountService.userValue && this.accountService.userValue.username == comment.userName">
+                            <svg width="22px" height="22px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
+                                fill="rgba(var(--bs-secondary-rgb),var(--bs-text-opacity))" class="">
+                                <path
+                                    d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                            </svg>
+                        </a>
+                        <ul *dropdownMenu class="dropdown-menu dropdown-menu-right mt-0 p-0" role="menu"
+                            aria-labelledby="options-link">
+                            <li role="menuitem">
+                                <a class="dropdown-item" (click)="updateConfirmations[comment.id] = true">Update</a>
+                            </li>
+                            <li role="menuitem">
+                                <a class="dropdown-item" id="delete-{{comment.id}}"
+                                    (click)="deleteConfirmations[comment.id] = true">Delete</a>
+                            </li>
+                        </ul>
+
+                    </span>
+                </div>
+                <p *ngIf="!updateConfirmations[comment.id]" class="ms-2">{{comment.comment}}</p>
+
+                <button *ngIf="!this.showReplyTextArea[comment.id]" class="btn btn-primary ms-auto"
+                    (click)="showReplyTextArea[comment.id] = true">Reply</button>
+                <form *ngIf="this.accountService.userValue && this.showReplyTextArea[comment.id]">
+                    <div class="form-group d-flex flex-column">
+                        <label for="commentReply">Reply as {{this.accountService.userValue.username |
+                            titlecase}}</label>
+                        <textarea class="form-control" id="commentReply" rows="3" [(ngModel)]="newReply"
+                            name="comment"></textarea>
+                        <button class="btn btn-primary ml-auto align-self-end mt-1"
+                            (click)="addComment(post.id, newReply, comment.id)">Reply</button>
+                    </div>
+                </form>
+
+                <textarea *ngIf="updateConfirmations[comment.id]"
+                    [(ngModel)]="comment.comment">{{comment.comment}}</textarea>
+                <button *ngIf="updateConfirmations[comment.id]" class="btn btn-primary ms-auto mt-1"
+                    (click)="updateComment(post.id, comment.id, comment.comment)">Update Comment</button>
+                    
+                <ng-container *ngIf="comment.children.length > 0">
+                    <ng-container *ngFor="let child of comment.children" [ngTemplateOutlet]="recursiveComments"
+                        [ngTemplateOutletContext]="{$implicit: child}">
+                    </ng-container>
+                </ng-container>
+
+            </div>
+            <div id="deleteConfirm-{{comment.id}}" class="deleteConfirm bg-secondary rounded position-absolute"
+                *ngIf="deleteConfirmations[comment.id]">
+                <p class="text-center">Are you sure you want to delete this comment?</p>
+                <button class="btn btn-primary p-3 border" (click)="deleteComment(post.id, comment.id)">Yes</button>
+                <button class="btn btn-secondary p-3 end-50 border"
+                    (click)="deleteConfirmations[comment.id] = false">No</button>
+            </div>
+        </div>
+
+    </ng-template>
+
+    <!-- <div *ngFor="let comment of post.comments"
+        class="text-decoration-none text-light row g-0 overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
         <div *ngIf="comment && comment.parentCommentId == 0">
             <div class="col p-4 d-flex flex-column position-relative comment pt-1">
                 <div class="d-flex justify-content-between pb-0">
@@ -48,10 +124,12 @@
                 </div>
                 <p *ngIf="!updateConfirmations[comment.id]" class="ms-2">{{comment.comment}}</p>
 
-                <button *ngIf="!this.showReplyTextArea[comment.id]" class="btn btn-primary ms-auto" (click)="showReplyTextArea[comment.id] = true">Reply</button>
+                <button *ngIf="!this.showReplyTextArea[comment.id]" class="btn btn-primary ms-auto"
+                    (click)="showReplyTextArea[comment.id] = true">Reply</button>
                 <form *ngIf="this.accountService.userValue && this.showReplyTextArea[comment.id]">
                     <div class="form-group d-flex flex-column">
-                        <label for="commentReply">Reply as {{this.accountService.userValue.username | titlecase}}</label>
+                        <label for="commentReply">Reply as {{this.accountService.userValue.username |
+                            titlecase}}</label>
                         <textarea class="form-control" id="commentReply" rows="3" [(ngModel)]="newReply"
                             name="comment"></textarea>
                         <button class="btn btn-primary ml-auto align-self-end mt-1"
@@ -74,7 +152,8 @@
                 (click)="deleteConfirmations[comment.id] = false">No</button>
         </div>
         <div *ngIf="comment && comment.children" class="ms-4">
-            <div class="col p-4 d-flex flex-column position-relative comment pt-1" *ngFor="let child of comment.children">
+            <div class="col p-4 d-flex flex-column position-relative comment pt-1"
+                *ngFor="let child of comment.children">
                 <div class="d-flex justify-content-between pb-0">
                     <div class="mt-0 pt-0 pb-0">
                         <p class="ms-2 mb-0 fw-bold">{{child.userName | titlecase}}</p>
@@ -127,5 +206,5 @@
             <button class="btn btn-secondary p-3 end-50 border"
                 (click)="deleteConfirmations[comment.id] = false">No</button>
         </div>
-    </div>
+    </div> -->
 </div>

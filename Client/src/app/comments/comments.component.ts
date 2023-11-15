@@ -6,6 +6,7 @@ import { AccountService } from '../_services/account.service';
 import { Post } from '../_models/post';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BsDropdownDirective } from 'ngx-bootstrap/dropdown';
+import { PostComment } from '../_models/post_comment';
 
 @Component({
   selector: 'app-comments',
@@ -16,6 +17,7 @@ export class CommentsComponent implements OnInit, OnDestroy {
   subs = new Array<Subscription>;
   newComment = "";
   newReply = "";
+  commentSection = "";
   post$!: Observable<Post | undefined>;
   postId!: number;
   shouldDelete = false;
@@ -61,5 +63,4 @@ export class CommentsComponent implements OnInit, OnDestroy {
       this.router.navigate(["/posts/" + this.postId]);
     });
   }
-
 }

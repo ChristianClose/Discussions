@@ -4,7 +4,7 @@ export interface PostComment {
     userName: string;
     date: string;
     parentCommentId: number;
-    children: Array<childrenComments>;
+    children: Array<PostComment>;
 }
 
 type childrenComments = {
