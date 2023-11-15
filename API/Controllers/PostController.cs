@@ -58,36 +58,30 @@ public class PostsController : BaseController
         var commentEntities = await _context.Comments
                                         .Include(c => c.UserEntity)
                                         .Where(c => c.PostEntityId == post.Id)
-                                        .Select(c => new CommentDto
-                                        {
-                                            Id = c.Id,
-                                            Comment = c.Comment,
-                                            UserName = c.UserEntity.UserName,
-                                            Date = c.Date,
-                                            ParentCommentId = c.ParentCommentId,
-                                        })
                                         .ToListAsync();
 
-
-
-        var comments = new List<CommentDto>();
-        for (int i = 0; i < commentEntities.Count(); i++)
+        var commentDictionary = commentEntities.ToDictionary(c => c.Id, c => new CommentDto
         {
-            if (commentEntities[i].ParentCommentId > 0) continue;
-            var childComments = commentEntities.FindAll(c => c.ParentCommentId == commentEntities[i].Id);
+            Id = c.Id,
+            Comment = c.Comment,
+            UserName = c.UserEntity.UserName,
+            Date = c.Date,
+            ParentCommentId = c.ParentCommentId,
+            Children = new List<CommentDto>()
+        });
 
-            comments.Add(
-                new CommentDto
-                {
-                    Id = commentEntities[i].Id,
-                    Comment = commentEntities[i].Comment,
-                    UserName = commentEntities[i].UserName,
-                    Date = commentEntities[i].Date,
-                    ParentCommentId = commentEntities[i].ParentCommentId,
-                    Children = await GetCommentChildren(childComments)
-                }
-            );
+        var rootComments = new List<CommentDto>();
 
+        foreach (var comment in commentDictionary.Values)
+        {
+            if (comment.ParentCommentId > 0 && commentDictionary.TryGetValue(comment.ParentCommentId, out var parentComment))
+            {
+                parentComment.Children.Add(comment);
+            }
+            else
+            {
+                rootComments.Add(comment);
+            }
         }
 
         var postWithComments = new
@@ -97,7 +91,7 @@ public class PostsController : BaseController
             post.Message,
             post.Date,
             post.UserName,
-            comments,
+            Comments = rootComments
         };
 
         return Ok(postWithComments);
@@ -240,53 +234,4 @@ public class PostsController : BaseController
         return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
     }
 
-    private async Task<List<CommentDto>> GetCommentChildren(List<CommentDto> comments)
-    {
-        var completeComment = new List<CommentDto>();
-        foreach (var comment in comments)
-        {
-            var childComments = await _context.Comments.Where(c => comment.Id == c.ParentCommentId).Select(c => new CommentDto
-            {
-                Id = c.Id,
-                Comment = c.Comment,
-                UserName = c.UserEntity.UserName,
-                Date = c.Date,
-                ParentCommentId = c.ParentCommentId,
-                Children = new List<CommentDto>()
-            }).ToListAsync();
-
-            childComments.ForEach(async childComment =>
-            {
-            {
-                var grandChildComments = await _context.Comments.Where(c => childComment.Id == c.ParentCommentId).Select(c => new CommentDto
-                {
-                    Id = c.Id,
-                    Comment = c.Comment,
-                    UserName = c.UserEntity.UserName,
-                    Date = c.Date,
-                    ParentCommentId = c.ParentCommentId,
-                    Children = new List<CommentDto>()
-                }).ToListAsync();
-
-                childComment.Children = await GetCommentChildren(grandChildComments);
-            }
-            });
-
-            var fullComment = new CommentDto
-            {
-                Id = comment.Id,
-                Comment = comment.Comment,
-                UserName = comment.UserName,
-                Date = comment.Date,
-                ParentCommentId = comment.ParentCommentId,
-                Children = childComments
-            };
-
-            completeComment.Add(fullComment);
-
-        }
-
-        return completeComment;
-    }
-    
 }
