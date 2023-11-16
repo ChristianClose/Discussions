@@ -1,16 +1,13 @@
-﻿using System.Drawing;
-using System.Security.Claims;
-using System.Text.Json;
+﻿using System.Security.Claims;
 using API.Context;
 using API.Controllers;
+using API.DTOs;
 using API.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.ObjectPool;
 
-namespace API;
+namespace API.Controllers;
 
 public class PostsController : BaseController
 {
@@ -60,38 +57,13 @@ public class PostsController : BaseController
                                         .Where(c => c.PostEntityId == post.Id)
                                         .ToListAsync();
 
-        var commentDictionary = commentEntities.ToDictionary(c => c.Id, c => new CommentDto
+        var postWithComments = new PostDTO(commentEntities)
         {
-            Id = c.Id,
-            Comment = c.Comment,
-            UserName = c.UserEntity.UserName,
-            Date = c.Date,
-            ParentCommentId = c.ParentCommentId,
-            Children = new List<CommentDto>()
-        });
-
-        var rootComments = new List<CommentDto>();
-
-        foreach (var comment in commentDictionary.Values)
-        {
-            if (comment.ParentCommentId > 0 && commentDictionary.TryGetValue(comment.ParentCommentId, out var parentComment))
-            {
-                parentComment.Children.Add(comment);
-            }
-            else
-            {
-                rootComments.Add(comment);
-            }
-        }
-
-        var postWithComments = new
-        {
-            post.Id,
-            post.Title,
-            post.Message,
-            post.Date,
-            post.UserName,
-            Comments = rootComments
+            Id = post.Id,
+            Title = post.Title,
+            Message = post.Message,
+            Date = post.Date,
+            Username = post.UserName,
         };
 
         return Ok(postWithComments);
@@ -164,7 +136,6 @@ public class PostsController : BaseController
     [HttpPost("{postId}/Comment")]
     public async Task<ActionResult> AddComment(int postId, CommentDto comment)
     {
-
         int userId = parseUserNameIdentifier(ClaimTypes.NameIdentifier);
         if (userId == -1) return BadRequest("Unable to Post Comment");
 

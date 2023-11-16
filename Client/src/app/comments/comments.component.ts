@@ -42,7 +42,8 @@ export class CommentsComponent implements OnInit, OnDestroy {
   }
 
   addComment(id: number, comment: string, parentCommentId: number): void {
-    this.subs.push(this.postService.addComment(this.postId, comment, parentCommentId).subscribe(() => {
+    this.subs.push(this.postService.addComment(this.postId, comment, parentCommentId).subscribe((res) => {
+      console.log(res)
       this.postService.getPost(this.postId);
       this.reloadPostComponent();
     }));

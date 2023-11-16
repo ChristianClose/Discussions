@@ -5,6 +5,7 @@ import { Constants } from '../config/constants';
 import { Observable } from 'rxjs/internal/Observable';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { map } from 'rxjs/internal/operators/map';
+import { CommonHelpers } from '../helpers/common.helpers';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,9 @@ export class AccountService {
   }
 
   Login(username: string, password: string): Observable<User> {
-    return this.http.post<User>(Constants.API_ENDPOINT + "/account/login", { username, password })
+    const API_URL = CommonHelpers.getApiUrl(`account/login`);
+    
+    return this.http.post<User>(API_URL, { username, password })
       .pipe(map((user: User) => {
         if (user) {
           localStorage.setItem("user", JSON.stringify(user));
@@ -41,7 +44,9 @@ export class AccountService {
   }
 
   Register(username: string, password: string) {
-    return this.http.post<User>(Constants.API_ENDPOINT + "/account/register", { username, password })
+    const API_URL = CommonHelpers.getApiUrl(`account/register`);
+
+    return this.http.post<User>(API_URL, { username, password })
       .pipe(map((user: User) => {
         if(user) {
           localStorage.setItem("user", JSON.stringify(user));

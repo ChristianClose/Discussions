@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace API;
+namespace API.DTOs;
 
 public class LoginDto
 {

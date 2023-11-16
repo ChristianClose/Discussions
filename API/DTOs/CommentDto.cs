@@ -1,4 +1,5 @@
 using API;
+namespace API.DTOs;
 
 public class CommentDto
 {

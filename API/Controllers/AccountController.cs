@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using API.Context;
 using API.Entities;
+using API.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;

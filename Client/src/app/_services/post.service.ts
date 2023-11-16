@@ -7,6 +7,7 @@ import { BehaviorSubject, ReplaySubject, Subject, shareReplay, switchMap, tap } 
 import { Constants } from '../config/constants';
 import { AccountService } from './account.service';
 import { PostComment } from '../_models/post_comment';
+import { CommonHelpers } from '../helpers/common.helpers';
 
 @Injectable({
   providedIn: 'root'
@@ -14,53 +15,29 @@ import { PostComment } from '../_models/post_comment';
 
 export class PostService {
 
-  baseUrl = Constants.API_ENDPOINT;
   Posts$: ReplaySubject<Post[]> = new ReplaySubject<Post[]>();
   Post$: ReplaySubject<Post> = new ReplaySubject<Post>();
-  options = {};
 
-  constructor(private http: HttpClient, private accountService: AccountService) {
-    if (accountService.userValue) {
-      this.options = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + this.accountService.userValue?.token
-        }),
-        responseType: 'text'
-      }
-    }
-  }
+  constructor(private http: HttpClient, private accountService: AccountService) {}
 
   getPosts(): Observable<Post[]> {
-
-    return this.http.get<Post[]>(this.baseUrl + "/posts").pipe(tap({
-      next: (posts: Post[]) => {
-        posts.forEach((post: Post) => post.date = new Date(post.date).toLocaleString())
+    const API_URL = CommonHelpers.getApiUrl("posts")
+    return this.http.get<Post[]>(API_URL).pipe(
+      tap(posts => posts.forEach(post => {
+        post.date = CommonHelpers.getLocalDateTime(post.date);
         this.Posts$.next(posts);
-        switchMap((posts: Post[]) => posts);
-        shareReplay(1);
-        return posts;
-      }
-    }));
+      })));
   }
 
   getPost(id: number) {
-
-    // return this.Posts$.pipe(
-    //   map((posts: Post[]) => posts.find(post => post.id == id)));
-    return this.http.get<Post>(this.baseUrl + "/posts/" + id).pipe(tap({
+    const API_URL = CommonHelpers.getApiUrl(`posts/${id}`);
+    return this.http.get<Post>(API_URL).pipe(tap({
 
       next: (response: Post) => {
-        const postDate = this.getLocalDateTime(response.date);
+        const postDate = CommonHelpers.getLocalDateTime(response.date);
         response.date = postDate;
-
-        response.comments.forEach(comment => {
-          const date = this.getLocalDateTime(comment.date);
-          comment.date = new Date(date).toLocaleString()
-        })
-
+        this.setCommentDateTime(response.comments);
         this.Post$.next(response);
-
         return response
       }
     }))
@@ -68,56 +45,87 @@ export class PostService {
 
   createPost(title: string, message: string) {
 
+    const API_URL = CommonHelpers.getApiUrl(`posts/create`);
+    const options = this.getOptions();
+
     const data = {
       "Title": title,
       "Message": message
     }
 
-    return this.http.post(this.baseUrl + "/posts/create", data, this.options).pipe(tap(() => this.getPosts()));
+    return this.http.post(API_URL, data).pipe(tap(() => this.getPosts()));
   }
 
   deletePost(id: number) {
+    const API_URL = CommonHelpers.getApiUrl(`posts/delete?id=${id}`);
 
-    return this.http.delete(this.baseUrl + "/posts/delete?id=" + id, this.options).pipe(tap(() => this.getPosts()))
+    return this.http.delete(API_URL).pipe(tap(() => this.getPosts()))
   }
 
   updatePost(id: number, message: string) {
+
+    const API_URL = CommonHelpers.getApiUrl("posts/update")
     const data = {
       "Id": id,
       "Message": message
     }
-    return this.http.put(this.baseUrl + "/posts/update", data, this.options);
+    return this.http.put(API_URL, data);
   }
 
   searchPosts(title: string) {
-    return this.http.get<Post[]>(this.baseUrl + "/posts/search?title=" + title).pipe(tap({
+    const API_URL = CommonHelpers.getApiUrl(`posts/search?title=${title}`)
+    return this.http.get<Post[]>(API_URL).pipe(tap({
       next: (response: Post[]) => this.Posts$.next(response)
     }))
   }
 
   addComment(postId: number, comment: string, parentCommentId: number) {
+    const API_URL = CommonHelpers.getApiUrl(`posts/${postId}/comment`)
+    
     const body = {
       comment: comment,
       parentCommentId: parentCommentId
     }
-    return this.http.post<PostComment>(this.baseUrl + "/posts/" + postId + "/comment", body, this.options);
+
+    return this.http.post<PostComment>(API_URL, body)
   }
 
   deleteComment(postId: number, commentId: number) {
-    return this.http.delete(this.baseUrl + "/posts/" + postId + "/Comment?id=" + commentId, this.options);
+    const API_URL = CommonHelpers.getApiUrl(`posts/${postId}/comment?id=${commentId}`)
+
+    return this.http.delete(API_URL);
   }
 
   updateComment(postId: number, commentId: number, comment: string) {
+    const API_URL = CommonHelpers.getApiUrl(`posts/${postId}/comment?id=${commentId}`)
     const body = "\"" + comment + "\"";
-    console.log(body)
-    return this.http.put(this.baseUrl + "/posts/" + postId + "/Comment?id=" + commentId, body, this.options);
+
+    return this.http.put(API_URL, body);
   }
 
-  getLocalDateTime(dateTime: string) {
-    const postDate: any = new Date(dateTime);
-    const offset = postDate.getTimezoneOffset() * 60000;
+  private setCommentDateTime(comments: PostComment[]): void {
+    comments.forEach(comment => {
+      comment.date = CommonHelpers.getLocalDateTime(comment.date);
 
-    return new Date(postDate - offset).toLocaleString()
+      if (comment.children.length > 0) {
+        this.setCommentDateTime(comment.children);
+      }
+    })
   }
+
+  private getOptions() {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + this.accountService.userValue?.token
+    });
+
+    const httpOptions : Object = {
+      headers: headers,
+      responseType: "text"
+    }
+
+    return httpOptions
+  }
+
 }
 

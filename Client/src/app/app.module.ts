@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
@@ -15,6 +15,7 @@ import { NewPostComponent } from './new-post/new-post.component';
 import { RegisterComponent } from './register/register.component';
 import { UpdatePostComponent } from './update-post/update-post.component';
 import { CommentsComponent } from './comments/comments.component';
+import { AuthInterceptor} from './auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,11 @@ import { CommentsComponent } from './comments/comments.component';
     ReactiveFormsModule,
     BsDropdownModule.forRoot()
   ],
-  providers: [],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true,
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
