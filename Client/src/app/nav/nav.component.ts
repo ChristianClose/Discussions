@@ -55,7 +55,6 @@ export class NavComponent implements OnInit, OnDestroy {
     
     this.loading = true;
     this.subs.push(this.accountService.Login(this.controls['username'].value, this.controls['password'].value)
-      .pipe(first())
       .subscribe({
         next: () => {
           this.form.reset();

@@ -53,7 +53,7 @@
                 </div>
                 <p *ngIf="!updateConfirmations[comment.id]" class="ms-2">{{comment.comment}}</p>
 
-                <button *ngIf="!this.showReplyTextArea[comment.id]" class="btn btn-primary ms-auto"
+                <button *ngIf="!this.showReplyTextArea[comment.id] && this.accountService.userValue" class="btn btn-primary ms-auto mb-2"
                     (click)="showReplyTextArea[comment.id] = true">Reply</button>
                 <form *ngIf="this.accountService.userValue && this.showReplyTextArea[comment.id]">
                     <div class="form-group d-flex flex-column">

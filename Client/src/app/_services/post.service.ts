@@ -21,7 +21,7 @@ export class PostService {
   constructor(private http: HttpClient, private accountService: AccountService) {}
 
   getPosts(): Observable<Post[]> {
-    const API_URL = CommonHelpers.getApiUrl("posts")
+    const API_URL = CommonHelpers.getApiUrl("post")
     return this.http.get<Post[]>(API_URL).pipe(
       tap(posts => posts.forEach(post => {
         post.date = CommonHelpers.getLocalDateTime(post.date);
@@ -30,7 +30,7 @@ export class PostService {
   }
 
   getPost(id: number) {
-    const API_URL = CommonHelpers.getApiUrl(`posts/${id}`);
+    const API_URL = CommonHelpers.getApiUrl(`post/${id}`);
     return this.http.get<Post>(API_URL).pipe(tap({
 
       next: (response: Post) => {
@@ -38,6 +38,7 @@ export class PostService {
         response.date = postDate;
         this.setCommentDateTime(response.comments);
         this.Post$.next(response);
+        console.log(response)
         return response
       }
     }))
@@ -45,7 +46,7 @@ export class PostService {
 
   createPost(title: string, message: string) {
 
-    const API_URL = CommonHelpers.getApiUrl(`posts/create`);
+    const API_URL = CommonHelpers.getApiUrl(`post/create`);
     const options = this.getOptions();
 
     const data = {
@@ -57,14 +58,14 @@ export class PostService {
   }
 
   deletePost(id: number) {
-    const API_URL = CommonHelpers.getApiUrl(`posts/delete?id=${id}`);
+    const API_URL = CommonHelpers.getApiUrl(`post/delete?id=${id}`);
 
     return this.http.delete(API_URL).pipe(tap(() => this.getPosts()))
   }
 
   updatePost(id: number, message: string) {
 
-    const API_URL = CommonHelpers.getApiUrl("posts/update")
+    const API_URL = CommonHelpers.getApiUrl("post/update")
     const data = {
       "Id": id,
       "Message": message
@@ -73,14 +74,14 @@ export class PostService {
   }
 
   searchPosts(title: string) {
-    const API_URL = CommonHelpers.getApiUrl(`posts/search?title=${title}`)
+    const API_URL = CommonHelpers.getApiUrl(`post/search?title=${title}`)
     return this.http.get<Post[]>(API_URL).pipe(tap({
       next: (response: Post[]) => this.Posts$.next(response)
     }))
   }
 
   addComment(postId: number, comment: string, parentCommentId: number) {
-    const API_URL = CommonHelpers.getApiUrl(`posts/${postId}/comment`)
+    const API_URL = CommonHelpers.getApiUrl(`post/${postId}/comment`)
     
     const body = {
       comment: comment,
@@ -91,13 +92,13 @@ export class PostService {
   }
 
   deleteComment(postId: number, commentId: number) {
-    const API_URL = CommonHelpers.getApiUrl(`posts/${postId}/comment?id=${commentId}`)
+    const API_URL = CommonHelpers.getApiUrl(`post/${postId}/comment?id=${commentId}`)
 
     return this.http.delete(API_URL);
   }
 
   updateComment(postId: number, commentId: number, comment: string) {
-    const API_URL = CommonHelpers.getApiUrl(`posts/${postId}/comment?id=${commentId}`)
+    const API_URL = CommonHelpers.getApiUrl(`post/${postId}/comment?id=${commentId}`)
     const body = "\"" + comment + "\"";
 
     return this.http.put(API_URL, body);

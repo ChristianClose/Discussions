@@ -21,17 +21,23 @@ export class AccountService {
     this.user = this.userSubject.asObservable();
   }
 
-  Login(username: string, password: string): Observable<User> {
+  Login(username: string, password: string) {
     const API_URL = CommonHelpers.getApiUrl(`account/login`);
-    
+
     return this.http.post<User>(API_URL, { username, password })
       .pipe(map((user: User) => {
+        console.log(typeof(user));
+        if(typeof(user) === 'string')
+        {
+          user = JSON.parse(user);
+        }
+        
         if (user) {
           localStorage.setItem("user", JSON.stringify(user));
           this.userSubject.next(user);
         }
         return user;
-      }));
+      }))
   }
 
   Logout() {
@@ -48,7 +54,14 @@ export class AccountService {
 
     return this.http.post<User>(API_URL, { username, password })
       .pipe(map((user: User) => {
-        if(user) {
+
+        console.log(typeof(user));
+        if(typeof(user) === 'string')
+        {
+          user = JSON.parse(user);
+        }
+        
+        if (user) {
           localStorage.setItem("user", JSON.stringify(user));
           this.userSubject.next(user);
         }

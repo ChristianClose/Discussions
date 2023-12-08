@@ -14,7 +14,7 @@ public class PostDTO
 
     public DateTime Date { get; set; }
 
-    public string Username { get; set; }
+    public string UserName { get; set; }
 
     public List<CommentDto> Comments { get; set; }
 

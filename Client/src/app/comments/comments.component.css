@@ -1,5 +1,7 @@
 .comment {
-    border-left: 0.1rem solid white;
+    border-left: 0.1rem inset white;
+    border-right: 0.1rem outset rgba(128, 128, 128, 0.1);
+    border-top: 0.1rem inset rgba(128, 128, 128, 0.1);
     border-bottom: 0.08rem solid rgba(128, 128, 128, 0.116);
 }
 

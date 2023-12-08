@@ -22,12 +22,13 @@ export class AuthInterceptor implements HttpInterceptor {
 
       let authReq = request.clone({
         setHeaders: {
-          'Accept': "text/plain",
+          'Accept': "application/json",
           'Authorization': `Bearer ${userToken}`,
           'Content-Type': "application/json",
         },
-        "responseType": request.method != "GET" && !request.url.includes("register") ? "text" : "json"
+        //"responseType": request.method != "GET" && !request.url.includes("register") ? "text" : "json"
       })
+
 
     return next.handle(authReq);
   }
