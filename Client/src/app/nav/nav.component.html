@@ -46,7 +46,10 @@
         <button dropdown *ngIf="(this.accountService.user | async)" class=" dropdown btn btn-secondary ms-2 ">
           <a href="#" dropdownToggle (click)="false" class="text-decoration-none text-light text-center ms-2 pe-1"
             *ngIf="this.accountService.userValue">Welcome, {{this.accountService.userValue.username | titlecase}}</a>
-          <ul *dropdownMenu class="dropdown-menu">
+          <ul *dropdownMenu class="dropdown-menu mt-2">
+            <li>
+              <a class="dropdown-item" routerLink="/account">Account</a>
+            </li>
             <li>
               <a class="dropdown-item" routerLink="/posts/new">Create Post</a>
             </li>

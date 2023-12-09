@@ -68,4 +68,10 @@ export class AccountService {
         return user;
       }))
   }
+
+  Update(password: string) {
+    const API_URL = CommonHelpers.getApiUrl("account/update");
+
+    return this.http.put<User>(API_URL, {password});
+  }
 }

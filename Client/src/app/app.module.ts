@@ -16,6 +16,7 @@ import { RegisterComponent } from './register/register.component';
 import { UpdatePostComponent } from './update-post/update-post.component';
 import { CommentsComponent } from './comments/comments.component';
 import { AuthInterceptor} from './auth.interceptor';
+import { AccountComponent } from './account/account.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { AuthInterceptor} from './auth.interceptor';
     NewPostComponent,
     RegisterComponent,
     UpdatePostComponent,
-    CommentsComponent
+    CommentsComponent,
+    AccountComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,36 @@
+<main>
+    <div class="container-fluid h-100 background-container border rounded">
+        <div class="row h-100 justify-content-center align-items-top">
+            <div class="col-lg-8" *ngIf="this.accountService.user | async as user">
+                <h1 class="text-white text-center">My Account</h1>
+                <h4 class="text-white text-center">Welcome, {{user.username | titlecase}}</h4>
+
+                <div>
+                    <ul>
+                        <li class="row m-2"><button class="btn btn-primary" (click)="this.shouldUpdate = !shouldUpdate; this.passwordUpdated = false">Update Password</button>
+                            <div *ngIf="shouldUpdate" class="mt-2 pt-2 w-75 m-auto" style="background-color: #151515;">
+                                <form [formGroup]="passwordForm" (ngSubmit)="updatePassword()" class="d-flex flex-column align-items-center w-25 m-auto">
+                                    <input id="newPassword" class="row m-auto mb-2" type="password" placeholder="New Password" formControlName="newPassword">
+                                    <input id="confirmPassword" class="row m-auto mb-2" type="password" placeholder="Confirm Password" formControlName="confirmPassword">
+                                    <button type="submit" class="btn btn-secondary align-self-end w-100">Submit</button>
+                                    <div *ngIf="passwordForm.invalid && (passwordForm.touched || passwordForm.dirty)" class="alert alert-danger mt-2">
+                                        <p *ngIf="passwordForm.errors?.['passwordError']" class="text-danger">Error: {{passwordForm.errors?.['passwordError']}}</p>
+                                        <p *ngIf="passwordForm.get('newPassword')?.errors?.['minlength'] && !passwordForm.errors?.['passwordError']" class="text-danger">Error: Password must be at least 8 characters long</p>
+                                        <p *ngIf="passwordForm.get('newPassword')?.errors?.['required'] 
+                                        || passwordForm.get('confirmPassword')?.errors?.['required']
+                                        && passwordForm.get('confirmPassword')?.dirty" class="text-danger">Error: All fields are required</p>
+                                    </div>
+                                    <div *ngIf="passwordUpdated" class="alert alert-success mt-2">
+                                        <p >Password Successfully Updated</p>
+                                    </div>
+
+                                </form>
+                            </div>                                                     
+                        </li>
+                        <li class="row m-2"><button class="btn btn-primary">View Post History</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

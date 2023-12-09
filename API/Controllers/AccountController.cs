@@ -68,9 +68,9 @@ public class AccountController : BaseController
     [HttpPut("update")]
     public async Task<ActionResult> Update(AccountUpdateDto updateDto)
     {
-
         if(updateDto.password == null) return BadRequest("Password is requred");
         var userId = parseUserNameIdentifier(ClaimTypes.NameIdentifier);
+        
         if(userId == -1) return NotFound("User not found");
 
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
